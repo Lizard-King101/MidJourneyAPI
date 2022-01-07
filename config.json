@@ -1,0 +1,17 @@
+{
+    "hosts": {
+        "production": {
+            "httpPort": 80,
+            "httpsPort": 443
+        },
+        "development": {
+            "httpPort": 3000,
+            "httpsPort": 3030
+        }
+    },
+    "bot_config": {
+        "bot_token": "OTI4NDYzNTk2ODM5NjQxMTY5.YdZJGw.sq68_kJOFGwNXofK0LstdEkA7Rg",
+        "application_id": "928463596839641169"
+    },
+    "socketio": false
+}
