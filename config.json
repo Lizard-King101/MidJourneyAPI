@@ -9,6 +9,12 @@
             "httpsPort": 3030
         }
     },
+    "database": {
+        "host": "172.105.148.20",
+        "database": "alacrity_price_history",
+        "user": "alacrity_devin",
+        "password": "Devin2021!@"
+    },
     "bot_config": {
         "bot_token": "OTI4NDYzNTk2ODM5NjQxMTY5.YdZJGw.sq68_kJOFGwNXofK0LstdEkA7Rg",
         "application_id": "928463596839641169"

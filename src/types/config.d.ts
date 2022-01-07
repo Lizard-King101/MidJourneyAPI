@@ -8,9 +8,9 @@ export interface Config {
         database: string,
         user: string,
         password: string
-    }
+    },
     bot_config: DiscordBotConfig;
-    socketio: boolean
+    socketio: boolean;
 }
 
 export interface HostConfig {
