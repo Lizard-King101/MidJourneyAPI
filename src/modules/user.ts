@@ -72,12 +72,9 @@ export class BotUser {
         })
 
         this.client.on('ready', (client) => {
-            (<any>client.channels.cache.get('1069657256993493093'))!.sendSlash('936929561302675456', 'imagine', 'cute borzoi dog running in snow');
+            (<any>client.channels.cache.get('1069657256993493093'))!.sendSlash('936929561302675456', 'imagine', 'cute borzoi dog running in snow, snow fall');
         })
 
-        
-
-        
 
         this.client.on('messageUpdate', (message) => {
 
