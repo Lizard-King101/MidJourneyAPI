@@ -9,17 +9,23 @@ import http from 'http';
     Type Definitions
 */
 import { Server } from 'node:http';
-import { GET } from './get';
-import { POST } from './post';
 import { Bot } from './bot/bot';
+import { BotUser } from './user';
 
 var cron = require('node-cron');
+
+declare global {
+    namespace NodeJS {
+        interface Global {
+            bot: Bot;
+            user: BotUser;
+        }
+    }
+}
 
 export class Main {
     httpServer: Server | null = null;
 
-    get: GET | null = null;
-    post: POST | null = null;
 
     constructor(
         private app: Express
@@ -41,12 +47,10 @@ export class Main {
             }
         }));
         
-        this.get = new GET(this.app);
-        this.post = new POST(this.app);
-        
         this.httpServer = http.createServer(this.app);
         
-        let bot = new Bot();
+        global.bot = new Bot();
+        global.user = new BotUser();
         
         this.serverListen();
 
