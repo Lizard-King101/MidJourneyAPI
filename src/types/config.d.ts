@@ -9,6 +9,7 @@ export interface Config {
         user: string,
         password: string
     },
+    dev: boolean;
     bot_config: DiscordBotConfig;
     user_token: string;
     socketio: boolean;

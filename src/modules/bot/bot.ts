@@ -30,68 +30,68 @@ export class Bot {
                     console.log('Bot ready');
                 })
     
-                this.client.on('interactionCreate', (interaction) => {
-                    // console.log('Message', interaction);
-                    // if(interaction)
-                    if(interaction.isCommand()) {
-                        let command = this.commands.filter(c => c.description?.name == interaction.commandName).pop();
-                        if(command && command.handleCommand) {
-                            command.handleCommand(interaction);
-                        } else {
-                            interaction.reply('Error processing comand');
-                        }
-                    }
+                // this.client.on('interactionCreate', (interaction) => {
+                //     // console.log('Message', interaction);
+                //     // if(interaction)
+                //     if(interaction.isCommand()) {
+                //         let command = this.commands.filter(c => c.description?.name == interaction.commandName).pop();
+                //         if(command && command.handleCommand) {
+                //             command.handleCommand(interaction);
+                //         } else {
+                //             interaction.reply('Error processing comand');
+                //         }
+                //     }
     
-                    if(interaction.isButton()) {
-                        console.log('Button');
+                //     if(interaction.isButton()) {
+                //         console.log('Button');
                         
-                        let commandArr = interaction.customId.split('/');
-                        console.log('command array', commandArr);
+                //         let commandArr = interaction.customId.split('/');
+                //         console.log('command array', commandArr);
                         
-                        let command = this.commands.filter(c => c.description?.name == commandArr[0])[0];
-                        if(command) {
-                            command.handleButton(interaction, commandArr.slice(1, commandArr.length))
-                        } else {
+                //         let command = this.commands.filter(c => c.description?.name == commandArr[0])[0];
+                //         if(command) {
+                //             command.handleButton(interaction, commandArr.slice(1, commandArr.length))
+                //         } else {
     
-                        }
-                    }
-                })
+                //         }
+                //     }
+                // })
     
-                this.client.on('messageReactionAdd', async (reaction, user) => {
-                    console.log('REACTION START');
+                // this.client.on('messageReactionAdd', async (reaction, user) => {
+                //     console.log('REACTION START');
                     
-                    const handleReaction = (reaction: MessageReaction, user: User) => {
-                        console.log(reaction);
-                        if(reaction.message.webhookId) {
-                            this.hooks.emit(reaction.message.webhookId, { reaction, user });
-                        }
-                    }
+                //     const handleReaction = (reaction: MessageReaction, user: User) => {
+                //         console.log(reaction);
+                //         if(reaction.message.webhookId) {
+                //             this.hooks.emit(reaction.message.webhookId, { reaction, user });
+                //         }
+                //     }
     
-                    let fetchedReaction: MessageReaction | undefined;
-                    let fetchedUser: User | undefined;
+                //     let fetchedReaction: MessageReaction | undefined;
+                //     let fetchedUser: User | undefined;
     
-                    if(reaction.partial) {
-                        try {
-                            fetchedReaction = await reaction.fetch();
-                        } catch(err) {
-                            console.log('Error fetching reaction');
-                        }
-                    } else {
-                        fetchedReaction = reaction;
-                    }
+                //     if(reaction.partial) {
+                //         try {
+                //             fetchedReaction = await reaction.fetch();
+                //         } catch(err) {
+                //             console.log('Error fetching reaction');
+                //         }
+                //     } else {
+                //         fetchedReaction = reaction;
+                //     }
     
-                    if(user.partial) {
-                        try {
-                            fetchedUser = await user.fetch();
-                        } catch(err) {
-                            console.log('Error fetching user');
-                        }
-                    } else {
-                        fetchedUser = user;
-                    }
+                //     if(user.partial) {
+                //         try {
+                //             fetchedUser = await user.fetch();
+                //         } catch(err) {
+                //             console.log('Error fetching user');
+                //         }
+                //     } else {
+                //         fetchedUser = user;
+                //     }
     
-                    if(fetchedReaction && fetchedUser) handleReaction(fetchedReaction, fetchedUser);
-                })
+                //     if(fetchedReaction && fetchedUser) handleReaction(fetchedReaction, fetchedUser);
+                // })
     
                 this.client.login(bot_token)
             }).catch((error) => {
@@ -106,14 +106,46 @@ export class Bot {
                 Routes.applicationCommands(application_id),
                 { body: this.commands.filter(c => c.register == true).map(c => c.description) }
             ).then((data) => {
-                console.log(data);
-                
                 resolve(true);
             }).catch((error) => {
                 reject(error);
             })
         })
         
+    }
+
+    createRoom(token: string): Promise<string> {
+        return new Promise(async (resolve, reject) => {
+            let guild = this.client?.guilds.cache.get('1068979613239357501');
+            if(!guild) {
+                reject('error fetching guild');
+                return;
+            }
+            let channelName = `int-${token}`;
+            let foundChannel = guild.channels.cache.find((channel) => {
+                
+                if(channel.name.toLowerCase() == channelName) {
+                    return true;
+                }
+                return false;
+            });
+            
+            if(foundChannel) {
+                let result = foundChannel.delete('recreate');
+                console.log('DELETING OLD CHANNEL', result);
+            }
+
+            let channel = await guild.channels.create(channelName, {
+                parent: '1069002589968007179',
+                type: 0
+            }).catch((error) => {
+                reject(error);
+            })
+            if(!channel) return;
+            console.log('NEW CHANNEL', channel);
+            resolve(channel.id);
+        })
+
     }
 }
 

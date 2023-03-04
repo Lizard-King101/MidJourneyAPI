@@ -11,14 +11,15 @@ import http from 'http';
 import { Server } from 'node:http';
 import { Bot } from './bot/bot';
 import { BotUser } from './user';
+import { Sockets } from './socket';
 
-var cron = require('node-cron');
 
 declare global {
     namespace NodeJS {
         interface Global {
             bot: Bot;
             user: BotUser;
+            socket: Sockets;
         }
     }
 }
@@ -51,17 +52,19 @@ export class Main {
         
         global.bot = new Bot();
         global.user = new BotUser();
-        
-        this.serverListen();
+        global.socket = new Sockets(this.httpServer);
+
+        let port = global.config.dev ? global.config.hosts.development.httpPort : global.config.hosts.production.httpPort;
+        this.serverListen(port);
 
         // cron.schedule('*/1 * * * *', () => {
         //     console.log('Cron Ran');
         // });
     }
 
-    async serverListen() {
-        this.httpServer?.listen(3000, () => {
-            console.log('HTTP listening on port: '+3000);
+    async serverListen(port: number) {
+        this.httpServer?.listen(port, () => {
+            console.log(`HTTP listening on port: ${port}`);
         })
 
     }

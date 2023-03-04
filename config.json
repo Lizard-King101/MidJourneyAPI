@@ -19,6 +19,7 @@
         "bot_token": "MTA2ODU2NzQ2Mzg3MDA4NzIwOA.GJE30r.pYnylT0K4Ey91eiArKa5piSL1DOk4mdkSLKF-Q",
         "application_id": "1068567463870087208"
     },
-    "user_token": "NzY4NTI5MzcyNjE2NTg5MzUy.GEem6r.u4S4V2l-wm_1ZbpYh2MycUvSgGv91rzMNM60Fs",
+    "dev": true,
+    "user_token": "Nzk1NzI4OTk3MTI4MzM5NDY2.GvychC.z_576azsP4bJHS--HsCdK1F9joigdBrrFYc5os",
     "socketio": false
 }
