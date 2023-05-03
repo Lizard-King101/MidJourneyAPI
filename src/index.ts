@@ -34,7 +34,7 @@ process.argv.slice(2).forEach((arg)=> {
 global.paths = {
     root: path.join(__dirname, '../')
 }
-global.paths.cache = path.join(global.paths.root, 'cache');
+global.paths.recent = path.join(global.paths.root, 'public', 'recent');
 global.config = require(path.join(global.paths.root, 'config.json'));
 
 console.log(global.config);

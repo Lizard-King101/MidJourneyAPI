@@ -2,6 +2,7 @@ import { Server } from "node:http";
 import { Server as SocketServer } from "socket.io";
 import bs58 from 'bs58';
 import { PromptInteract, Updates } from "./user";
+import { Recent } from "../types/recent";
 
 export class Sockets {
     io: SocketServer;
@@ -23,10 +24,14 @@ export class Sockets {
         this.io.on('connect', (socket) => {
             console.log('SOCKET CONNECTED');
 
-            socket.on('auth-token', (token: string) => {
+            socket.on('auth-token', async (token: string) => {
                 console.log('TOKEN', token);
                 
                 this.socketTokens[socket.id] = token;
+
+                global.bot.checkParent('1069002589968007179').catch((error) => {
+                    console.error(error)
+                })
             })
 
             socket.on('no-auth', () => {
@@ -35,7 +40,13 @@ export class Sockets {
                 socket.emit('set-auth', token);
             })
 
-            socket.on('disconnect', (reason) => {
+            socket.on('disconnect', async (reason) => {
+                let channel_id = await global.bot.getChannelID(this.socketTokens[socket.id]).catch((error) => {
+                    console.error(error);
+                });
+                if(channel_id) {
+                    global.bot.deleteChannel(channel_id);
+                }
                 console.log('SOCKET DISCONNECTED', reason);
             })
 
@@ -116,6 +127,10 @@ export class Sockets {
             })
 
             socket.emit('get-auth')
+        })
+
+        global.user.on('recent', (recent: Recent) => {
+            this.io.sockets.emit('recent', recent);
         })
     }
 

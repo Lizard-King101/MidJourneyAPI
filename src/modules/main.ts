@@ -47,7 +47,7 @@ export class Main {
                 sameSite: true
             }
         }));
-        
+        this.app.use(express.static(global.paths.root + '/public'));
         this.httpServer = http.createServer(this.app);
         
         global.bot = new Bot();

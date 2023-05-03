@@ -2,7 +2,7 @@ import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
 import { commands } from './commands/commands';
 import { Command } from './commands/command';
-import { Client, Intents, MessageReaction, User }  from 'discord.js';
+import { CategoryChannel, Client, Intents, MessageReaction, User }  from 'discord.js';
 import { WebHooks } from './webhooks';
 
 export class Bot {
@@ -116,23 +116,22 @@ export class Bot {
 
     createRoom(token: string): Promise<string> {
         return new Promise(async (resolve, reject) => {
-            let guild = this.client?.guilds.cache.get('1068979613239357501');
+            let guild = this.client?.guilds.cache.get(global.config.guild_id);
             if(!guild) {
                 reject('error fetching guild');
                 return;
             }
-            let channelName = `int-${token}`;
-            let foundChannel = guild.channels.cache.find((channel) => {
-                
-                if(channel.name.toLowerCase() == channelName) {
-                    return true;
-                }
-                return false;
-            });
+            let channelName = `int-${token}`.toLocaleLowerCase();
+            console.log('CHANNEL NAME', channelName);
+            
+            let foundChannel = guild.channels.cache.find((channel) => channel.name.toLowerCase() == channelName);
             
             if(foundChannel) {
-                let result = foundChannel.delete('recreate');
-                console.log('DELETING OLD CHANNEL', result);
+                // let result = foundChannel.delete('recreate');
+                // console.log('DELETING OLD CHANNEL', result);
+                console.log('FOUND OLD CHANNEL', foundChannel);
+                resolve(foundChannel.id);
+                return;
             }
 
             let channel = await guild.channels.create(channelName, {
@@ -146,6 +145,57 @@ export class Bot {
             resolve(channel.id);
         })
 
+    }
+
+    getChannelID(token: string): Promise<string> {
+        return new Promise(async (resolve, reject) => {
+            let guild = this.client?.guilds.cache.get(global.config.guild_id);
+            if(!guild) {
+                reject('error fetching guild');
+                return;
+            }
+            let channelName = `int-${token}`.toLocaleLowerCase();
+            
+            let foundChannel = guild.channels.cache.find((channel) => channel.name.toLowerCase() == channelName);
+            
+            if(!foundChannel) {
+                reject('Channel not found');
+                return;
+            }
+            resolve(foundChannel.id);
+            return;
+        });
+    }
+
+    deleteChannel(id: string) {
+        return new Promise(async (resolve, reject) => {
+            let guild = this.client?.guilds.cache.get(global.config.guild_id);
+            if(!guild) {
+                reject('error fetching guild');
+                return;
+            }
+
+            let foundChannel = await guild.channels.cache.get(id)
+            let deleteResult = await foundChannel?.delete();
+            resolve(true);
+        })
+    }
+
+    checkParent(id: string) {
+        return new Promise((resolve, reject) => {
+            let guild = this.client?.guilds.cache.get(global.config.guild_id);
+            if(!guild) {
+                reject('error fetching guild');
+                return;
+            }
+            let foundChannel = <CategoryChannel | undefined>guild.channels.cache.find((channel) => channel.type == 'GUILD_CATEGORY' && channel.id == id);
+            if(!foundChannel) {
+                reject('category not found');
+                return;
+            }
+
+            console.log('CATEGORY CHILDREN', foundChannel.children.size);
+        })
     }
 }
 

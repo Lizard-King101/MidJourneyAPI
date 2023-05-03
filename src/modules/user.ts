@@ -3,6 +3,11 @@ import { Routes } from 'discord-api-types/v9';
 import { Message, MessageActionRow, MessageActionRowComponent, MessageAttachment, PartialMessage } from 'discord.js';
 import { Client, Intents, MessageButton }  from 'discord.js-selfbot-v13'; 
 import { EventEmitter } from 'node:stream';
+import { Recent } from '../types/recent';
+
+import path from 'path';
+import axios from 'axios';
+import fs from 'fs-extra';
 
 const percent = /\({1}([0-9]+)\%{1}\){1}/gm;
 
@@ -16,11 +21,12 @@ export class BotUser extends EventEmitter {
         this.rest = new REST({ version: '9' }).setToken(user_token);
         this.client = new Client({intents: [Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_WEBHOOKS], checkUpdate: false});
 
-        this.client.on('messageCreate', (message) => {
+        this.client.on('messageCreate', async (message) => {
             // console.log('Interaction', message);
             if(message.content.includes('(fast)') && message.components.length == 2 && message.components[0].components.length == 5) {
                 // first render
                 // console.log('FIRST / VARIATIONS', message);
+                
                 
                 let attachment = message.attachments.first();
                 if(attachment) {
@@ -48,9 +54,18 @@ export class BotUser extends EventEmitter {
 
                 let attachment = message.attachments.first();
                 if(attachment) {
+                    let recent = await this.downloadRecent({
+                        url: attachment.url,
+                        prompt: message.content.split('**')[1],
+                        created: new Date()
+                    })
+
+                    this.emit('recent', recent);
+                    console.log('RECENT', recent);
+                    
                     this.emitUpdate(message.channelId, {
                         type: 'upscale',
-                        url: attachment.url,
+                        url: recent.url,
                         message: message.id,
                         channel: message.channelId
                     });
@@ -127,11 +142,11 @@ export class BotUser extends EventEmitter {
 
     async submitPrompt(config: PromptConfig) {
         let result = await (<any>this.client.channels.cache.get(config.channel))!.sendSlash('936929561302675456', 'imagine', config.prompt);
-        console.log('SUBMIT RESULT', result);
+        // console.log('SUBMIT RESULT', result);
     }
 
     async submitInteract(interact: PromptInteract) {
-        let channel = this.client.guilds.cache.get('1068979613239357501')?.channels.cache.get(interact.channel);
+        let channel = this.client.guilds.cache.get(global.config.guild_id)?.channels.cache.get(interact.channel);
         if(!channel || channel?.type != 'GUILD_TEXT') {
             return false;
         }
@@ -182,6 +197,34 @@ export class BotUser extends EventEmitter {
         }
 
         
+    }
+
+    downloadRecent(recent: Recent): Promise<Recent> {
+        return new Promise(async (resolve) => {
+            let file_name = (new Date().getTime() + (Math.random() * 1000)).toString(16) + '.png';
+            fs.mkdirSync(global.paths.recent, {recursive: true});
+            console.log('FILE PATH', path.join(global.paths.recent, file_name));
+            
+            let writestream = fs.createWriteStream(path.join(global.paths.recent, file_name));
+            let response = await axios.get(recent.url, {responseType: 'stream'});
+            await response.data.pipe(writestream);
+            recent.url = `/recent/${file_name}`;
+            await this.updateRecents(recent);
+            writestream.on('finish', () => {
+                resolve(recent);
+            }) 
+        })    
+    }
+
+    async updateRecents(recent: Recent) {
+        let recentFile = path.join(global.paths.recent, 'recent.json');
+        fs.mkdirSync(global.paths.recent, {recursive: true});
+        let recentArr: Array<Recent> | void = await fs.readJSON(recentFile).catch((err) => {});
+        if(!recentArr) recentArr = [];
+        recentArr.push(recent);
+        if(recentArr.length >= 10) recentArr = recentArr.slice(-9);
+        fs.writeJSONSync(recentFile, recentArr);
+        return true;
     }
 }
 
