@@ -12,6 +12,8 @@ import { Server } from 'node:http';
 import { Bot } from './bot/bot';
 import { BotUser } from './user';
 import { Sockets } from './socket';
+import Routes from './routes/routes';
+import bodyParser from 'body-parser';
 
 
 declare global {
@@ -36,6 +38,7 @@ export class Main {
         this.app.use(framegaurd());
         this.app.use(express.urlencoded({extended: false}));
         this.app.use(express.json());
+        this.app.use(express.raw({type: 'application/json'}))
         this.app.use(Cors());
         this.app.use(session({
             secret: 'some secret change later',
@@ -53,6 +56,8 @@ export class Main {
         global.bot = new Bot();
         global.user = new BotUser();
         global.socket = new Sockets(this.httpServer);
+
+        this.app.use(Routes);
 
         let port = global.config.dev ? global.config.hosts.development.httpPort : global.config.hosts.production.httpPort;
         this.serverListen(port);

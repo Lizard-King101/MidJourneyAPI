@@ -2,11 +2,11 @@
     "hosts": {
         "production": {
             "httpPort": 80,
-            "httpsPort": 443
+            "hostName": "https://midapi.multihosts.net/"
         },
         "development": {
             "httpPort": 3000,
-            "httpsPort": 3030
+            "hostName": "https://midapi.multihosts.net/"
         }
     },
     "database": {
@@ -18,6 +18,12 @@
     "bot_config": {
         "bot_token": "MTA2ODU2NzQ2Mzg3MDA4NzIwOA.GJE30r.pYnylT0K4Ey91eiArKa5piSL1DOk4mdkSLKF-Q",
         "application_id": "1068567463870087208"
+    },
+    "shopify": {
+        "shopify_webhook_token": "9efc4264e1266429e2554bae9b846d4eb952ad7397184027b7f9112b264370d6",
+        "order_test": false,
+        "jondo_user_id": 640,
+        "jondo_api_key": "oqIMDcUb75Byzm"
     },
     "guild_id": "1068979613239357501",
     "dev": true,

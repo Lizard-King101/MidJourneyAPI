@@ -13,7 +13,8 @@ export class Sockets {
         this.io = new SocketServer(this.server, {
             cors: {
                 origin: "*",
-                methods: ["GET", "POST"]
+                methods: ["GET", "POST"],
+                credentials: true
             }
         });
 

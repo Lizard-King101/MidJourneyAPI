@@ -48,7 +48,7 @@ export class BotUser extends EventEmitter {
                 // let [v1, v2, v3, v4] = row_2;
                 // console.log('Row 1:', row_1);
                 // console.log('Row 2:', row_2);
-            } else if(message.content.includes('Upscaled') && message.components.length == 2 && message.components[0].components.length == 4) {
+            } else if(message.attachments.size > 0 ) {
                 // upscaled
                 // console.log('UPSCALE');
 

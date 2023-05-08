@@ -9,6 +9,12 @@ export interface Config {
         user: string,
         password: string
     },
+    shopify: {
+        shopify_webhook_token: string;
+        order_test: boolean;
+        jondo_user_id: number;
+        jondo_api_key: string;
+    }
     dev: boolean;
     guild_id: string;
     bot_config: DiscordBotConfig;
@@ -18,7 +24,7 @@ export interface Config {
 
 export interface HostConfig {
     httpPort: number;
-    httpsPort: number;
+    hostName: string;
     database?: DatabaseConfig,
 }
 
