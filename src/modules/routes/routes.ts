@@ -31,6 +31,7 @@ Routes.get<any, {width: string, height: string, image: string}>('/image/:width/:
                 height: +height,
                 fit: 'cover'
             })
+            
             .png();
 
         imagePipe.pipe(res);

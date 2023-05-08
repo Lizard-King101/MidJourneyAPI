@@ -111,7 +111,7 @@ orderRoutes.post<any, any, ShopifyOrder>('/order/cancel', async (req, res, next)
 orderRoutes.post('/order/status', async (req, res, next) => {
     console.log(req.body);
     res.send('ok');
-})
+});
 
 orderRoutes.get('/order/test', async (req, res, next) => {
     res.send(await getToken());
