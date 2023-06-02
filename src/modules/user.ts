@@ -10,7 +10,7 @@ import axios from 'axios';
 import fs from 'fs-extra';
 
 const percent = /\({1}([0-9]+)\%{1}\){1}/gm;
-
+const userIds = ['936929561302675456'];
 export class BotUser extends EventEmitter {
     rest: REST;
     client: Client;
@@ -48,7 +48,7 @@ export class BotUser extends EventEmitter {
                 // let [v1, v2, v3, v4] = row_2;
                 // console.log('Row 1:', row_1);
                 // console.log('Row 2:', row_2);
-            } else if(message.attachments.size > 0 ) {
+            } else if(message.attachments.size > 0 && message.author) {
                 // upscaled
                 // console.log('UPSCALE');
 

@@ -31,6 +31,9 @@ function itemsFormat(items: Array<ShopifyLineItem>) {
 }
 
 function createFormat(order: ShopifyOrder) {
+    let host = global.config.dev ? global.config.hosts.development : global.config.hosts.production;
+    let { hostName } = host; 
+    
     return `<root>
     <orderRequest>
         ${apiFormat()}
@@ -38,7 +41,7 @@ function createFormat(order: ShopifyOrder) {
             <thirdPartyId>${order.id}</thirdPartyId>
             <billingIsReturnAddress>Y</billingIsReturnAddress>
             <companyName>Arrtificial</companyName>
-            <custLogo>dev.arrtificial.com/assets/apple-touch-icon.png</custLogo>
+            <custLogo>${hostName}/branding/logo.jpg</custLogo>
         </customerInfo>
         <shippingType>Basic</shippingType>
         ${testFormat(order)}
