@@ -58,7 +58,7 @@ export class Sockets {
                 if(!channel_id) return;
 
                 let timout: NodeJS.Timeout | undefined = setTimeout(() => {
-                    socket.emit('prompt-error', 'No response from client');
+                    socket.emit('prompt-error', 'ARRTIFICIAL is at capacity right now, please try again shortly.');
                 }, 30000);
 
                 console.log('PROMPT', prompt);

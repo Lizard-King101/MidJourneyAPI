@@ -4,6 +4,9 @@ import orderRoutes from "./orders";
 import path from "path";
 import sharp from "sharp";
 import fs from "fs-extra";
+import axios from "axios";
+import { Image } from "../noco";
+import { Recent } from "../../types/recent";
 
 const Routes = express.Router();
 
@@ -16,12 +19,42 @@ Routes.get('/', (req, res, next) => {
     res.status(200).send('Hello')
 });
 
+
+Routes.get('/recent', async (req, res) => {
+    let rows = await global.noco.getRows<Recent>('Arrtificial', 'Recent', {where: `(Status,eq,Published)`, sort: '-CreatedAt'}).catch((error) => {
+        res.status(500).send(error);
+    });
+    if(!rows) return;
+    res.send(rows.list);
+})
+
 Routes.get<any, {width: string, height: string, image: string}>('/image/:width/:height/:image', async (req, res, next) => {
     let recentPath = path.join(global.paths.root, 'public', 'recent');
     let { width, height, image } = req.params;
     let imagePath = path.join(recentPath, req.params.image);
     let test = "187f8482c17.135.png";
-    let imageFile = await fs.readFile(imagePath);
+    let { region, bucket_name } = global.config.linode_bucket;
+    let rows = await global.noco.getRows<Recent>('Arrtificial', 'Recent', {where: `(Image,like,${image})`}).catch((error) => {
+        res.status(500).send(error);
+    });
+    if(!rows) return;
+    if(!rows?.list[0]?.Image![0]) {
+        res.status(404);
+        return;
+    }
+    let img = rows.list[0].Image[0];
+
+    let imageResponse = await axios.get<ArrayBuffer>(img.url, {responseType: 'arraybuffer'}).catch((error) => {
+        res.status(500).send(error);
+    });
+    // console.log('img', testImageFile?.data);
+    if(!imageResponse) {
+        res.status(404);
+        return;
+    }
+
+    let imageFile = imageResponse.data;
+    // let imageFile = await fs.readFile(imagePath);
     console.log(imagePath, imageFile);
     
     try {

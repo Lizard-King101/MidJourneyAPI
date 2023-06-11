@@ -3,7 +3,6 @@ import express from 'express';
 import session from 'express-session';
 import Cors from 'cors';
 import framegaurd from 'frameguard';
-
 import http from 'http';
 /*
     Type Definitions
@@ -15,6 +14,10 @@ import { Sockets } from './socket';
 import Routes from './routes/routes';
 import bodyParser from 'body-parser';
 
+import path from 'path';
+import fs from 'fs-extra';
+import { fstat } from 'fs';
+import { NocoDB } from './noco';
 
 declare global {
     namespace NodeJS {
@@ -22,6 +25,7 @@ declare global {
             bot: Bot;
             user: BotUser;
             socket: Sockets;
+            noco: NocoDB;
         }
     }
 }
@@ -53,6 +57,28 @@ export class Main {
         this.app.use(express.static(global.paths.root + '/public'));
         this.httpServer = http.createServer(this.app);
         
+      
+        let noco = global.noco = new NocoDB({
+            host: global.config.nocodb.host,
+            api_token: global.config.nocodb.api_key
+        });
+        // let { org, project } = global.config.nocodb;
+        // let imageName = '18831932173.9b.png';
+        // let imagePath = path.join(global.paths.recent, imageName);
+
+        // noco.uploadImage(imagePath, 'noco/Arrtificial/Recent/Image').then((image) => {
+        //     noco.insertRow(project, 'Recent', {
+        //         Prompt: 'Test Image',
+        //         Image: image
+        //     }).then((response) => {
+        //         console.log('Res', response);
+                
+        //     }).catch((error) => {
+        //         console.log(error);
+                
+        //     })
+        // })
+
         global.bot = new Bot();
         global.user = new BotUser();
         global.socket = new Sockets(this.httpServer);

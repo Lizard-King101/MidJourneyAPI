@@ -9,11 +9,11 @@
             "hostName": "https://midapi.multihosts.net/"
         }
     },
-    "database": {
-        "host": "172.105.148.20",
-        "database": "alacrity_price_history",
-        "user": "alacrity_devin",
-        "password": "Devin2021!@"
+    "nocodb": {
+        "host": "https://noco.multihosts.net",
+        "api_key": "brM3VgOxffIs5wF6VsY2Y6mpD7HI9zKzGPYncqpv",
+        "org": "noco",
+        "project": "Arrtificial"
     },
     "bot_config": {
         "bot_token": "MTA2ODU2NzQ2Mzg3MDA4NzIwOA.GJE30r.pYnylT0K4Ey91eiArKa5piSL1DOk4mdkSLKF-Q",
@@ -24,6 +24,10 @@
         "order_test": false,
         "jondo_user_id": 640,
         "jondo_api_key": "oqIMDcUb75Byzm"
+    },
+    "linode_bucket": {
+        "region": "us-southeast-1",
+        "bucket_name": "noco-files"
     },
     "guild_id": "1068979613239357501",
     "dev": true,

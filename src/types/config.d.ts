@@ -3,17 +3,21 @@ export interface Config {
         production: HostConfig,
         development: HostConfig
     },
-    database: {
-        host: string,
-        database: string,
-        user: string,
-        password: string
+    nocodb: {
+        host: string;
+        api_key: string;
+        org: string;
+        project: string;
     },
     shopify: {
         shopify_webhook_token: string;
         order_test: boolean;
         jondo_user_id: number;
         jondo_api_key: string;
+    }
+    linode_bucket: {
+        region: string;
+        bucket_name: string;
     }
     dev: boolean;
     guild_id: string;

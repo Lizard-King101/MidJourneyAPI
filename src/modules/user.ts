@@ -7,7 +7,7 @@ import { Recent } from '../types/recent';
 
 import path from 'path';
 import axios from 'axios';
-import fs from 'fs-extra';
+import fs, { PathLike } from 'fs-extra';
 
 const percent = /\({1}([0-9]+)\%{1}\){1}/gm;
 const userIds = ['936929561302675456'];
@@ -48,27 +48,37 @@ export class BotUser extends EventEmitter {
                 // let [v1, v2, v3, v4] = row_2;
                 // console.log('Row 1:', row_1);
                 // console.log('Row 2:', row_2);
-            } else if(message.attachments.size > 0 && message.author) {
+            } else if(message.attachments.size > 0 && userIds.includes(message.author.id)) {
                 // upscaled
-                // console.log('UPSCALE');
+                // console.log('UPSCALE', message);
 
                 let attachment = message.attachments.first();
                 if(attachment) {
-                    let recent = await this.downloadRecent({
-                        url: attachment.url,
-                        prompt: message.content.split('**')[1],
-                        created: new Date()
+                    let recent = await this.downloadRecent(attachment.url)
+
+                    let noco = global.noco;
+
+                    noco.uploadImage(recent, 'noco/Arrtificial/Recent/Image').then((image) => {
+                        noco.insertRow<Recent>(global.config.nocodb.project, 'Recent', {
+                            Prompt: message.content.split('**')[1],
+                            Image: image
+                        }).then((recent) => {
+                            // this.emit('recent', recent);
+                            console.log('RECENT', recent);
+                            
+                            this.emitUpdate(message.channelId, {
+                                type: 'upscale',
+                                url: recent.Image![0].url,
+                                message: message.id,
+                                channel: message.channelId
+                            });
+                        }).catch((error) => {
+                            console.log(error);
+                            
+                        })
                     })
 
-                    this.emit('recent', recent);
-                    console.log('RECENT', recent);
                     
-                    this.emitUpdate(message.channelId, {
-                        type: 'upscale',
-                        url: recent.url,
-                        message: message.id,
-                        channel: message.channelId
-                    });
                 }
                 // console.log('Row 1:', row_1);
                 // console.log('Row 2:', row_2);
@@ -199,33 +209,32 @@ export class BotUser extends EventEmitter {
         
     }
 
-    downloadRecent(recent: Recent): Promise<Recent> {
+    downloadRecent(url: string): Promise<PathLike> {
         return new Promise(async (resolve) => {
             let file_name = (new Date().getTime() + (Math.random() * 1000)).toString(16) + '.png';
             fs.mkdirSync(global.paths.recent, {recursive: true});
-            console.log('FILE PATH', path.join(global.paths.recent, file_name));
-            
-            let writestream = fs.createWriteStream(path.join(global.paths.recent, file_name));
-            let response = await axios.get(recent.url, {responseType: 'stream'});
+            // console.log('FILE PATH', path.join(global.paths.recent, file_name));
+            let filePath = path.join(global.paths.recent, file_name);
+            let writestream = fs.createWriteStream(filePath);
+            let response = await axios.get(url, {responseType: 'stream'});
             await response.data.pipe(writestream);
-            recent.url = `/recent/${file_name}`;
-            await this.updateRecents(recent);
+            // await this.updateRecents(recent);
             writestream.on('finish', () => {
-                resolve(recent);
-            }) 
+                resolve(filePath);
+            })
         })    
     }
 
-    async updateRecents(recent: Recent) {
-        let recentFile = path.join(global.paths.recent, 'recent.json');
-        fs.mkdirSync(global.paths.recent, {recursive: true});
-        let recentArr: Array<Recent> | void = await fs.readJSON(recentFile).catch((err) => {});
-        if(!recentArr) recentArr = [];
-        recentArr.push(recent);
-        if(recentArr.length >= 10) recentArr = recentArr.slice(-9);
-        fs.writeJSONSync(recentFile, recentArr);
-        return true;
-    }
+    // async updateRecents(recent: Recent) {
+    //     let recentFile = path.join(global.paths.recent, 'recent.json');
+    //     fs.mkdirSync(global.paths.recent, {recursive: true});
+    //     let recentArr: Array<Recent> | void = await fs.readJSON(recentFile).catch((err) => {});
+    //     if(!recentArr) recentArr = [];
+    //     recentArr.push(recent);
+    //     if(recentArr.length >= 10) recentArr = recentArr.slice(-9);
+    //     fs.writeJSONSync(recentFile, recentArr);
+    //     return true;
+    // }
 }
 
 export type Updates = ResultUpdate | PreviewUpdate;
