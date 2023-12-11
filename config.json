@@ -11,19 +11,19 @@
     },
     "nocodb": {
         "host": "https://noco.multihosts.net",
-        "api_key": "brM3VgOxffIs5wF6VsY2Y6mpD7HI9zKzGPYncqpv",
+        "api_key": "",
         "org": "noco",
         "project": "Arrtificial"
     },
     "bot_config": {
-        "bot_token": "MTA2ODU2NzQ2Mzg3MDA4NzIwOA.GJE30r.pYnylT0K4Ey91eiArKa5piSL1DOk4mdkSLKF-Q",
+        "bot_token": "",
         "application_id": "1068567463870087208"
     },
     "shopify": {
-        "shopify_webhook_token": "9efc4264e1266429e2554bae9b846d4eb952ad7397184027b7f9112b264370d6",
+        "shopify_webhook_token": "",
         "order_test": false,
         "jondo_user_id": 640,
-        "jondo_api_key": "oqIMDcUb75Byzm"
+        "jondo_api_key": ""
     },
     "linode_bucket": {
         "region": "us-southeast-1",
@@ -31,6 +31,6 @@
     },
     "guild_id": "1068979613239357501",
     "dev": true,
-    "user_token": "MTA5NzYxMjA0MDg4Mjg5Njk4Nw.GbUhdi.-VN5t7y7H-lNj7hn2MRk4VODDh04Xuegc9iJbY",
+    "user_token": "",
     "socketio": false
 }
